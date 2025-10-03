@@ -191,64 +191,64 @@
     &copy; 2025 UU88. Bản quyền được bảo hộ. Kiểm tra link truy cập an toàn mỗi ngày.
   </footer>
 
-  <script>
-    const links = [
-      { url: 'https://23uu88.com/', label: 'Link 1 - UU88 Miền Bắc' },
-      { url: 'https://26uu88.com/', label: 'Link 2 - UU88 Miền Trung' },
-      { url: 'https://28uu88.com/', label: 'Link 3 - UU88 Miền Nam' },
-      { url: 'https://30uu88.com/', label: 'Link 4 - UU88 Toàn Quốc' }
-    ];
+ <div class="link-grid" id="linkList"></div>
 
-    const renderLinks = () => {
-      const container = document.getElementById('linkList');
-      container.innerHTML = '';
-      links.forEach((link, index) => {
-        const box = document.createElement('div');
-        box.className = 'link-box';
-        box.innerHTML = `
-          <div class="link-title">${link.label}</div>
-          <a href="${link.url}" target="_blank">${link.url}</a>
-          <div class="status" id="status-${index}">Đang kiểm tra...</div>
-        `;
-        container.appendChild(box);
+<script>
+  const links = [
+    { url: 'https://23uu88.com/', label: 'Truy Cập UU88 Miền Bắc' },
+    { url: 'https://26uu88.com/', label: 'Truy Cập UU88 Miền Trung' },
+    { url: 'https://28uu88.com/', label: 'Truy Cập UU88 Miền Nam' },
+    { url: 'https://30uu88.com/', label: 'Truy Cập UU88 Toàn Quốc' }
+  ];
+
+  const renderLinks = () => {
+    const container = document.getElementById('linkList');
+    container.innerHTML = '';
+    links.forEach((link, index) => {
+      const box = document.createElement('div');
+      box.className = 'link-box';
+      box.innerHTML = `
+        <div class="link-title">${link.label}</div>
+        <a href="${link.url}" target="_blank">🔗 ${link.label}</a>
+        <div class="status" id="status-${index}">Đang kiểm tra...</div>
+      `;
+      container.appendChild(box);
+    });
+  };
+
+  const pingLink = async (url) => {
+    const start = Date.now();
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
+      await fetch(url, {
+        mode: 'no-cors',
+        method: 'HEAD',
+        signal: controller.signal
       });
-    };
+      const ms = Date.now() - start;
+      return { status: 'online', time: ms };
+    } catch (err) {
+      return { status: 'offline', time: null };
+    }
+  };
 
-    const pingLink = async (url) => {
-      const start = Date.now();
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 4000);
-
-        await fetch(url, {
-          mode: 'no-cors',
-          method: 'HEAD',
-          signal: controller.signal
-        });
-
-        const ms = Date.now() - start;
-        return { status: 'online', time: ms };
-      } catch (err) {
-        return { status: 'offline', time: null };
+  const startCheck = () => {
+    renderLinks();
+    links.forEach(async (link, index) => {
+      const result = await pingLink(link.url);
+      const statusEl = document.getElementById(`status-${index}`);
+      if (result.status === 'online') {
+        statusEl.className = 'status online';
+        statusEl.innerHTML = `⏱ <span>${result.time}ms</span> • Truy cập an toàn`;
+      } else {
+        statusEl.className = 'status offline';
+        statusEl.innerHTML = `❌ <span>Không phản hồi</span> • Link lỗi hoặc bị chặn`;
       }
-    };
+    });
+  };
 
-    const startCheck = () => {
-      renderLinks();
-      links.forEach(async (link, index) => {
-        const result = await pingLink(link.url);
-        const statusEl = document.getElementById(`status-${index}`);
-        if (result.status === 'online') {
-          statusEl.className = 'status online';
-          statusEl.innerHTML = `⏱ <span>${result.time}ms</span> • Truy cập an toàn`;
-        } else {
-          statusEl.className = 'status offline';
-          statusEl.innerHTML = `❌ <span>Không phản hồi</span> • Link lỗi hoặc bị chặn`;
-        }
-      });
-    };
-
-    startCheck();
-  </script>
+  startCheck();
+</script>
 </body>
 </html>
